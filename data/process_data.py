@@ -2,8 +2,18 @@ import sys
 import pandas as pd
 from sqlalchemy import create_engine
 
-
 def load_data(messages_filepath, categories_filepath):
+
+    """
+    Load data from CSV files.
+
+    Args:
+        messages_filepath (str): The file path of the messages CSV file.
+        categories_filepath (str): The file path of the categories CSV file.
+
+    Returns:
+        pandas.DataFrame: The merged dataframe.
+    """
     messages = pd.read_csv(messages_filepath)
     # print(messages.head())
     categories = pd.read_csv(categories_filepath)
@@ -17,6 +27,16 @@ def load_data(messages_filepath, categories_filepath):
 
 
 def clean_data(df):
+
+    """
+    Clean the data.
+
+    Args:
+        df (pandas.DataFrame): The input dataframe.
+
+    Returns:
+        pandas.DataFrame: The cleaned dataframe.
+    """
 
     clean_df = df.copy()
 
@@ -44,23 +64,33 @@ def clean_data(df):
     return clean_df
 
 def save_data(df, database_filename):
+    """
+    Save the cleaned dataframe to a SQLite database.
+
+    Args:
+        df (pandas.DataFrame): The cleaned dataframe.
+        database_filename (str): The filename of the SQLite database.
+    """
     engine = create_engine(f'sqlite:///{database_filename}')
     df.to_sql('dr_messages_categorized', engine, index=False) 
 
 
+
 def main():
+    """
+    Main function to execute the data processing pipeline.
+    """
     if len(sys.argv) == 4:
 
         messages_filepath, categories_filepath, database_filepath = sys.argv[1:]
 
-        print('Loading data...\n    MESSAGES: {}\n    CATEGORIES: {}'
-              .format(messages_filepath, categories_filepath))
+        print(f'Loading data...\n    MESSAGES: {messages_filepath}\n    CATEGORIES: {categories_filepath}')
         df = load_data(messages_filepath, categories_filepath)
 
         print('Cleaning data...')
         df = clean_data(df)
         
-        print('Saving data...\n    DATABASE: {}'.format(database_filepath))
+        print(f'Saving data...\n    DATABASE: {database_filepath}')
         save_data(df, database_filepath)
         
         print('Cleaned data saved to database!')
