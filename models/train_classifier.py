@@ -4,7 +4,6 @@ from sqlalchemy import create_engine
 import nltk
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
-nltk.download(['punkt', 'wordnet'])
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
@@ -13,6 +12,8 @@ from sklearn.metrics import classification_report,accuracy_score
 from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import Pipeline
 import pickle
+
+nltk.download(['punkt', 'wordnet'])
 
 
 
@@ -101,19 +102,18 @@ def evaluate_model(model, X_test, Y_test, category_names):
     Y_pred = model.predict(X_test)
 
     # Calculate the accuracy for each of them.
-    for i in range(len(Y_test.columns)):
+    for i, column in enumerate(Y_test.columns):
         accuracy = accuracy_score(Y_test.iloc[:, i].values, Y_pred[:, i])
-        print('Category: {} '.format(Y_test.columns[i]))
-        print('Accuracy: {:.2f} \n'.format(accuracy))
+        print(f'Category: {column}')
+        print(f'Accuracy: {accuracy:.2f} \n')
 
     # Now we create a classification report for each of the 36 categories
-    category_names = Y.columns.tolist()
-    for i in range(len(category_names)):
-        print("Category:", category_names[i],"\n", classification_report(Y_test.iloc[:, i], Y_pred[:, i]))
+    for i, category_name in enumerate(category_names):
+        print("Category:", category_name, "\n", classification_report(Y_test.iloc[:, i], Y_pred[:, i]))
 
     # Overall accuracy
     accuracy = (Y_pred == Y_test).mean().mean()
-    print('Overall Accuracy: {:.2f}% \n'.format(accuracy*100))
+    print(f'Overall Accuracy: {accuracy*100:.2f}% \n')  
 
 
 def save_model(model, model_filepath):
@@ -137,16 +137,16 @@ def main():
         database_filepath, model_filepath = sys.argv[1:]
         print(f'Loading data...\n    DATABASE: {database_filepath}')
         X, Y, category_names = load_data(database_filepath)
-        X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2)
+        x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=0.2)
         
         print('Building model...')
         model = build_model()
         
         print('Training model...')
-        model.fit(X_train, Y_train)
+        model.fit(x_train, y_train)
         
         print('Evaluating model...')
-        evaluate_model(model, X_test, Y_test, category_names)
+        evaluate_model(model, x_test, y_test, category_names)
 
         print(f'Saving model...\n    MODEL: {model_filepath}')
         save_model(model, model_filepath)
