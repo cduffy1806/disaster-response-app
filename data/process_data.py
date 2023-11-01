@@ -74,7 +74,9 @@ def clean_data(df):
     # drop duplicates
     clean_df.drop_duplicates(inplace=True)
 
-    return clean_df
+    clean_df_bin = clean_df.loc[clean_df.related != 2, :]
+
+    return clean_df_bin
 
 
 def save_data(df, database_filename):
