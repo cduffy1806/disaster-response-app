@@ -19,3 +19,12 @@ Also include here is a web app where an emergency worker can input a new message
     `python run.py`
 
 3. Go to http://0.0.0.0:3001/
+
+
+### Files 
+ - `disaster_categories.csv` and `disaster_messages.csv` contain messages received and their
+ corresponding categories. These will act as training data for our model
+  - `proess_data.py` : ETL pipeline that cleans data and stores in database
+  - `train_classifier.py`  : ML pipeline that trains classifier and saves to pickle file
+  -  `run.py` : script for runnning web app
+   - `go.html` and `master.html` contain html for web app
